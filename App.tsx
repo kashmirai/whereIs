@@ -24,7 +24,6 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
-    
     <NavigationContainer>
       <Stack.Navigator>
           <Stack.Screen name='Home' component={HomeScreen}/>
