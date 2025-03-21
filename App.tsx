@@ -15,6 +15,7 @@ import { HomeScreen } from './screens/HomeScreen';
 import { ShowItem } from './screens/ShowItemScreen';
 import { CreateItem } from './screens/CreateItemScreen';
 import { ListItem } from './screens/ListItemScreen';
+import "./global.css"
 
 const Stack = createNativeStackNavigator();
 

@@ -10,7 +10,7 @@ export const HomeScreen= () => {
 
     return (
         <SafeAreaView>
-        <Text>Where is</Text>
+        <Text className="text-3xl">Where is</Text>
         <Button title="Add Item" onPress={() => navigation.navigate('Add Item')}/>
         <Button title="List Item" onPress={() => navigation.navigate('List Item')}/>
         </SafeAreaView>
