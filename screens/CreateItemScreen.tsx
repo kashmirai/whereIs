@@ -10,25 +10,16 @@ interface Location {
 
 export const CreateItem = () => {
 
-  const Permission = async () => {
+  const requestLocationPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Cool App Location Permission',
-          message:
-            'Cool App needs access to your location ' +
-            'so you can take awesome pictures.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         console.log('You can use the location');
         getCurrentLocation();
       } else {
-        console.log('Camera permission denied');
+        console.log('Location permission denied');
       }
     } catch (err) {
       console.warn(err);
@@ -43,7 +34,7 @@ export const CreateItem = () => {
         const {latitude, longitude} = position.coords;
         setLocation({latitude, longitude});
         console.log(latitude, longitude);
-        setTiedot(prev => ({...prev, sijainti : latitude}))
+        setTiedot(prev => ({...prev, sijainti : {latitude, longitude}}));
       }
     )
   }
@@ -52,11 +43,11 @@ export const CreateItem = () => {
   const [tiedot, setTiedot] = React.useState({
     nimi : "",
     kuvaus : "",
-    sijainti : 0
+    sijainti : {latitude : 0, longitude : 0}
   });
 
   useEffect(() => {
-    
+    requestLocationPermission();
   }, []);
 
 
@@ -64,6 +55,12 @@ export const CreateItem = () => {
         <SafeAreaView className="mx-1">
 
           <Text className="my-2 text-xl font-bold">Add a new item</Text>
+
+          <View>
+            <Text>
+            {tiedot.sijainti.latitude} {tiedot.sijainti.longitude}
+            </Text>
+          </View>
 
           <Text className="mt-4 mb-1">Name</Text>
           <TextInput className="border border-black" placeholder="Syötä teksti" value={tiedot.nimi} onChangeText={uusinimi => setTiedot(prev => ({...prev, nimi : uusinimi}))}></TextInput>
@@ -73,10 +70,6 @@ export const CreateItem = () => {
 
           <View className="mt-10">
           <Button title="Add Image"/>
-          </View>
-
-          <View className="mt-10">
-          <Button title="Location" onPress={Permission}/>
           </View>
 
           <View className="mt-3">

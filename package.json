@@ -15,11 +15,13 @@
     "nativewind": "^4.1.23",
     "react": "19.0.0",
     "react-native": "0.78.1",
+    "react-native-camera": "^4.2.1",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-location": "^2.5.0",
     "react-native-reanimated": "^3.17.1",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-screens": "^4.9.2",
+    "react-native-vision-camera": "^4.6.4",
     "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
