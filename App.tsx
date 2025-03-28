@@ -16,6 +16,7 @@ import { ShowItem } from './screens/ShowItemScreen';
 import { CreateItem } from './screens/CreateItemScreen';
 import { ListItem } from './screens/ListItemScreen';
 import "./global.css"
+import { ItemsProvider } from './context/ItemsContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ const Stack = createNativeStackNavigator();
 const App = () => { 
 
   return (
+    <ItemsProvider>
     <SafeAreaProvider>
     <NavigationContainer>
       <Stack.Navigator>
@@ -34,6 +36,7 @@ const App = () => {
     </NavigationContainer>
 
     </SafeAreaProvider>
+    </ItemsProvider>
 
   );
 }

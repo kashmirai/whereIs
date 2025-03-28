@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import Geolocation from 'react-native-geolocation-service';
 import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera";
 import { CameraComponent } from "../components/Camera";
+import { useItems } from "../context/ItemsContext";
 
 interface Location {
   latitude: number;
@@ -12,7 +13,19 @@ interface Location {
 
 export const CreateItem = () => {
 
-  
+  const [tiedot, setTiedot] = useState({
+    nimi: "",
+    kuvaus: "",
+    sijainti: { latitude: 0, longitude: 0 },
+    kuva: ""
+  });
+
+  const {addItem} = useItems();
+  const tallennaTiedot = () => {
+    addItem(tiedot); 
+    console.log(tiedot)
+  }
+
   const requestLocationPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -50,11 +63,6 @@ export const CreateItem = () => {
   }
   
 
-  const [tiedot, setTiedot] = React.useState({
-    nimi : "",
-    kuvaus : "",
-    sijainti : {latitude : 0, longitude : 0}
-  });
 
   useEffect(() => {
     requestLocationPermission();
@@ -87,7 +95,7 @@ export const CreateItem = () => {
           </View>
 
           <View className="mt-3">
-          <Button title="Save" onPress={() => console.log(tiedot)}/>
+          <Button title="Save" onPress={() => tallennaTiedot()}/>
           </View>
           
           {lupa 
