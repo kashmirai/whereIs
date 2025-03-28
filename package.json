@@ -15,7 +15,6 @@
     "nativewind": "^4.1.23",
     "react": "19.0.0",
     "react-native": "0.78.1",
-    "react-native-camera": "^4.2.1",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-location": "^2.5.0",
     "react-native-reanimated": "^3.17.1",

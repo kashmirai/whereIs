@@ -1,7 +1,8 @@
-import { Button, Text, TextInput, View, PermissionsAndroid } from "react-native"
+import { Button, Text, TextInput, View, PermissionsAndroid, StyleSheet } from "react-native"
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import Geolocation from 'react-native-geolocation-service';
+import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera";
 
 interface Location {
   latitude: number;
@@ -50,9 +51,27 @@ export const CreateItem = () => {
     requestLocationPermission();
   }, []);
 
+  const { hasPermission, requestPermission } = useCameraPermission()
+
+  const kysyLupaa = async () => {
+    const lupatila = await requestPermission();
+    console.log(lupatila); }
+
+  const device = useCameraDevice('back');
+
 
     return (
         <SafeAreaView className="mx-1">
+
+{hasPermission ? (
+      device ? (
+        <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} />
+      ) : (
+        <Text>No camera device found</Text>
+      )
+    ) : (
+      <Text>Permission denied</Text>
+    )}
 
           <Text className="my-2 text-xl font-bold">Add a new item</Text>
 
@@ -69,7 +88,7 @@ export const CreateItem = () => {
           <TextInput className="border border-black" placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}></TextInput>
 
           <View className="mt-10">
-          <Button title="Add Image"/>
+          <Button title="Add Image" onPress={kysyLupaa}/>
           </View>
 
           <View className="mt-3">
@@ -82,3 +101,13 @@ export const CreateItem = () => {
     )
 
 }
+
+StyleSheet.create({
+  absoluteFill: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0
+  }
+});
