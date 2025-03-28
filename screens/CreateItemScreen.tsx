@@ -1,8 +1,9 @@
-import { Button, Text, TextInput, View, PermissionsAndroid, StyleSheet } from "react-native"
+import { Button, Text, TextInput, View, PermissionsAndroid, StyleSheet, Touchable, TouchableOpacity } from "react-native"
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import Geolocation from 'react-native-geolocation-service';
 import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera";
+import { CameraComponent } from "../components/Camera";
 
 interface Location {
   latitude: number;
@@ -28,6 +29,7 @@ export const CreateItem = () => {
   };
 
   const [location, setLocation] = useState<Location | null>(null);  
+  const [lupa, setLupa] = useState<boolean>(false);
 
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
@@ -51,27 +53,13 @@ export const CreateItem = () => {
     requestLocationPermission();
   }, []);
 
-  const { hasPermission, requestPermission } = useCameraPermission()
-
-  const kysyLupaa = async () => {
-    const lupatila = await requestPermission();
-    console.log(lupatila); }
-
-  const device = useCameraDevice('back');
 
 
     return (
-        <SafeAreaView className="mx-1">
+        
+        <SafeAreaView style={{flex : 1}} className="mx-1">
 
-{hasPermission ? (
-      device ? (
-        <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} />
-      ) : (
-        <Text>No camera device found</Text>
-      )
-    ) : (
-      <Text>Permission denied</Text>
-    )}
+          
 
           <Text className="my-2 text-xl font-bold">Add a new item</Text>
 
@@ -88,26 +76,40 @@ export const CreateItem = () => {
           <TextInput className="border border-black" placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}></TextInput>
 
           <View className="mt-10">
-          <Button title="Add Image" onPress={kysyLupaa}/>
+          <Button title="Add Image" onPress={() => setLupa(!lupa)}/>
           </View>
 
           <View className="mt-3">
           <Button title="Save" onPress={() => console.log(tiedot)}/>
           </View>
           
-
+          {lupa ? <CameraComponent lupa = {lupa} setLupa = {setLupa}/> : <Text>Ei lupaa</Text> }
         </SafeAreaView>
 
     )
 
 }
 
-StyleSheet.create({
-  absoluteFill: {
-    position: 'absolute',
+const styles = StyleSheet.create({
+  camera: {
+    position: 'absolute', // Asetetaan kamera absoluuttisesti
     top: 0,
-    bottom: 0,
     left: 0,
-    right: 0
+    right: 0,
+    bottom: 0, // Peittää koko ruudun
+    width: '100%',
+    height: '100%', // Tällä varmistetaan, että kamera täyttää koko näytön
+  },
+  button : {
+    flex : 1,
+    backgroundColor: 'white',
+    padding: 10,
+    width: 60,
+    height: 60,
+    borderRadius: 30, 
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    marginLeft: -30 
   }
 });
