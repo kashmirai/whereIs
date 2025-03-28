@@ -1,6 +1,7 @@
-import React from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 
 interface CameraComponentProps {
   lupa: boolean;
@@ -8,7 +9,20 @@ interface CameraComponentProps {
 }
 
 export const CameraComponent: React.FC<CameraComponentProps> = ({ lupa, setLupa }) => {
+
+    const camera = useRef<Camera>(null);
+
+    const otaKuva = async () => {
+
+        const kuva = await camera.current?.takePhoto();
+        console.log('Kuva otettu', kuva?.path);
+        CameraRoll.saveAsset(`file://${kuva?.path}`, { type: 'photo' })
+        setLupa(false);
+        
+    };
+
   const device = useCameraDevice('back');
+  
 
   if (!device) {
     return <Text>Kameraa ei löytynyt</Text>;
@@ -18,13 +32,18 @@ export const CameraComponent: React.FC<CameraComponentProps> = ({ lupa, setLupa 
     <>
       {lupa ? (
         <>
-          <Camera style={styles.camera} device={device} isActive={true} />
+          <Camera style={styles.camera} device={device} isActive={true} ref={camera} photo={true} />
           <TouchableOpacity
             style={styles.button}
             onPress={() => setLupa(false)}
           >
             <Text style={styles.buttonText}>Sulje Kamera</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity>
+            <Button title='ota kuva' onPress={otaKuva}/>
+          </TouchableOpacity>
+
         </>
       ) : (
         <Text>Kamera on pois päältä</Text>

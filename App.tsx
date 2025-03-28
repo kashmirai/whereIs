@@ -20,7 +20,6 @@ import "./global.css"
 const Stack = createNativeStackNavigator();
 
 
-
 const App = () => { 
 
   return (

@@ -12,6 +12,7 @@ interface Location {
 
 export const CreateItem = () => {
 
+  
   const requestLocationPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -30,6 +31,12 @@ export const CreateItem = () => {
 
   const [location, setLocation] = useState<Location | null>(null);  
   const [lupa, setLupa] = useState<boolean>(false);
+  const { hasPermission, requestPermission } = useCameraPermission();
+
+  const kaynnistaKamera = () => {
+    requestPermission();
+    setLupa(true);
+  }
 
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
@@ -76,14 +83,18 @@ export const CreateItem = () => {
           <TextInput className="border border-black" placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}></TextInput>
 
           <View className="mt-10">
-          <Button title="Add Image" onPress={() => setLupa(!lupa)}/>
+          <Button title="Add Image" onPress={() => kaynnistaKamera()}/>
           </View>
 
           <View className="mt-3">
           <Button title="Save" onPress={() => console.log(tiedot)}/>
           </View>
           
-          {lupa ? <CameraComponent lupa = {lupa} setLupa = {setLupa}/> : <Text>Ei lupaa</Text> }
+          {lupa 
+          ? <CameraComponent 
+              lupa = {lupa} 
+              setLupa = {setLupa}/> 
+          : <Text>Ei lupaa</Text> }
         </SafeAreaView>
 
     )
