@@ -2,20 +2,25 @@ import React, { useRef } from 'react';
 import { Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import { useItems } from '../context/ItemsContext';
 
 interface CameraComponentProps {
   lupa: boolean;
   setLupa: React.Dispatch<React.SetStateAction<boolean>>;
+  kuvanTiedot:  string ;
+  setKuvanTiedot: React.Dispatch<React.SetStateAction< string >>
 }
 
-export const CameraComponent: React.FC<CameraComponentProps> = ({ lupa, setLupa }) => {
+export const CameraComponent: React.FC<CameraComponentProps> = ({ lupa, setLupa, kuvanTiedot, setKuvanTiedot }) => {
 
     const camera = useRef<Camera>(null);
+    const {addItem} = useItems();
 
     const otaKuva = async () => {
 
         const kuva = await camera.current?.takePhoto();
         console.log('Kuva otettu', kuva?.path);
+        setKuvanTiedot(kuva?.path || "");
         CameraRoll.saveAsset(`file://${kuva?.path}`, { type: 'photo' })
         setLupa(false);
         

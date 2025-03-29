@@ -1,4 +1,4 @@
-import { Button, Text, TextInput, View, PermissionsAndroid, StyleSheet, Touchable, TouchableOpacity } from "react-native"
+import { Button, Text, TextInput, View, PermissionsAndroid, StyleSheet, Touchable, TouchableOpacity, Image } from "react-native"
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import Geolocation from 'react-native-geolocation-service';
@@ -19,9 +19,12 @@ export const CreateItem = () => {
     sijainti: { latitude: 0, longitude: 0 },
     kuva: ""
   });
+  const [error, setError] = useState<{nimi? : string, kuvaus? : string}>({});
 
   const {addItem} = useItems();
+
   const tallennaTiedot = () => {
+
     addItem(tiedot); 
     console.log(tiedot)
   }
@@ -44,6 +47,7 @@ export const CreateItem = () => {
 
   const [location, setLocation] = useState<Location | null>(null);  
   const [lupa, setLupa] = useState<boolean>(false);
+  const [kuvanTiedot, setKuvanTiedot] = useState<string>("");
   const { hasPermission, requestPermission } = useCameraPermission();
 
   const kaynnistaKamera = () => {
@@ -68,6 +72,13 @@ export const CreateItem = () => {
     requestLocationPermission();
   }, []);
 
+  useEffect(() => {
+  if (kuvanTiedot) {
+    setTiedot(prev => ({ ...prev, kuva: kuvanTiedot }));
+  }
+}, [kuvanTiedot]);
+
+
 
 
     return (
@@ -90,6 +101,11 @@ export const CreateItem = () => {
           <Text className="mt-4 mb-1">Description</Text>
           <TextInput className="border border-black" placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}></TextInput>
 
+          <Image 
+          source={{ uri: `file://${kuvanTiedot}` }} 
+          style={{ width: 200, height: 200 }} 
+          />
+
           <View className="mt-10">
           <Button title="Add Image" onPress={() => kaynnistaKamera()}/>
           </View>
@@ -101,7 +117,9 @@ export const CreateItem = () => {
           {lupa 
           ? <CameraComponent 
               lupa = {lupa} 
-              setLupa = {setLupa}/> 
+              setLupa = {setLupa}
+              kuvanTiedot = {kuvanTiedot}
+              setKuvanTiedot = {setKuvanTiedot}/> 
           : <Text>Ei lupaa</Text> }
         </SafeAreaView>
 
@@ -132,3 +150,7 @@ const styles = StyleSheet.create({
     marginLeft: -30 
   }
 });
+
+function alert(arg0: string) {
+  throw new Error("Function not implemented.");
+}
