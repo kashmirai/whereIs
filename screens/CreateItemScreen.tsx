@@ -10,6 +10,10 @@ interface Location {
   latitude: number;
   longitude: number;
 }
+interface Virheet {
+  nimi?: string;
+  kuvaus?: string;
+}
 
 export const CreateItem = () => {
 
@@ -19,12 +23,13 @@ export const CreateItem = () => {
     sijainti: { latitude: 0, longitude: 0 },
     kuva: ""
   });
-  const [error, setError] = useState<{nimi? : string, kuvaus? : string}>({});
+  const [virheilmoitukset, setVirheIlmoitukset] = useState<Virheet>({});
 
   const {addItem} = useItems();
 
   const tallennaTiedot = () => {
 
+    tarkastaLomake();
     addItem(tiedot); 
     console.log(tiedot)
   }
@@ -79,6 +84,24 @@ export const CreateItem = () => {
 }, [kuvanTiedot]);
 
 
+const tarkastaLomake = () => {
+
+  let virheet : {[key : string] : string} = {};
+  Object.entries(tiedot).forEach(([key, value]) => {
+    if (tiedot.nimi.trim() === "") {
+      virheet.nimi = "Nimi on pakollinen kenttä.";
+    }
+    if (tiedot.kuvaus.trim() === "") {
+      virheet.kuvaus = "Kuvaus on pakollinen kenttä.";
+    }
+  });
+
+  setVirheIlmoitukset(virheet);
+  console.log(virheet.kuvaus)
+  return virheet;
+
+}
+
 
 
     return (
@@ -96,10 +119,10 @@ export const CreateItem = () => {
           </View>
 
           <Text className="mt-4 mb-1">Name</Text>
-          <TextInput className="border border-black" placeholder="Syötä teksti" value={tiedot.nimi} onChangeText={uusinimi => setTiedot(prev => ({...prev, nimi : uusinimi}))}></TextInput>
+          <TextInput className={`border p-2 ${virheilmoitukset.nimi ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä teksti" value={tiedot.nimi} onChangeText={uusinimi => setTiedot(prev => ({...prev, nimi : uusinimi}))}></TextInput>
 
           <Text className="mt-4 mb-1">Description</Text>
-          <TextInput className="border border-black" placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}></TextInput>
+          <TextInput className={`border p-2 ${virheilmoitukset.kuvaus ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}></TextInput>
 
           <Image 
           source={{ uri: `file://${kuvanTiedot}` }} 
