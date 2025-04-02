@@ -1,11 +1,12 @@
-import { Button, Text, TextInput, View, PermissionsAndroid, StyleSheet, Touchable, TouchableOpacity, Image } from "react-native"
+import { Button, Text, View, PermissionsAndroid, StyleSheet, Touchable, TouchableOpacity, Image } from "react-native"
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import Geolocation from 'react-native-geolocation-service';
 import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera";
 import { CameraComponent } from "../components/Camera";
 import { useItems } from "../context/ItemsContext";
-import { TextInput as TextInput2} from 'react-native-paper';
+import { HelperText, TextInput} from 'react-native-paper';
+import { showMessage } from "react-native-flash-message";
 
 
 interface Location {
@@ -31,9 +32,21 @@ export const CreateItem = () => {
 
   const tallennaTiedot = () => {
 
-    tarkastaLomake();
-    addItem(tiedot); 
-    console.log(tiedot)
+    const lomakeVirheet = tarkastaLomake();
+    const onkoVirheita = Object.keys(lomakeVirheet).length > 0;
+    if (onkoVirheita) {
+      showMessage({
+        message: "Tarkista lomake, kaikki kentät ovat pakollisia.",
+        type: "danger",
+        duration: 3000,})
+      return;
+    } else {
+      showMessage({
+        message: "Esine tallennettu onnistuneesti.",
+        type: "success",
+        duration: 3000,})
+      addItem(tiedot); 
+    }
   }
 
   const requestLocationPermission = async () => {
@@ -99,7 +112,6 @@ const tarkastaLomake = () => {
   });
 
   setVirheIlmoitukset(virheet);
-  console.log(virheet.kuvaus)
   return virheet;
 
 }
@@ -110,8 +122,6 @@ const tarkastaLomake = () => {
         
         <SafeAreaView style={{flex : 1}} className="mx-1">
 
-          
-
           <Text className="my-2 text-xl font-bold">Add a new item</Text>
 
           <View>
@@ -121,12 +131,13 @@ const tarkastaLomake = () => {
           </View>
 
           <Text className="mt-4 mb-1">Name</Text>
-          <TextInput className={`border p-2 ${virheilmoitukset.nimi ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä teksti" value={tiedot.nimi} onChangeText={uusinimi => setTiedot(prev => ({...prev, nimi : uusinimi}))}></TextInput>
+          <TextInput className={`border p-2 ${virheilmoitukset.nimi ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä teksti" value={tiedot.nimi} onChangeText={uusinimi => setTiedot(prev => ({...prev, nimi : uusinimi}))}/>
+          {virheilmoitukset.nimi && <HelperText type="error">{virheilmoitukset.nimi}</HelperText>}
 
           <Text className="mt-4 mb-1">Description</Text>
-          <TextInput className={`border p-2 ${virheilmoitukset.kuvaus ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}></TextInput>
+          <TextInput className={`border p-2 ${virheilmoitukset.kuvaus ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}/>
+          {virheilmoitukset.kuvaus && <HelperText type="error">{virheilmoitukset.kuvaus}</HelperText>}
 
-          <TextInput2></TextInput2>
           <Image 
           source={{ uri: `file://${kuvanTiedot}` }} 
           style={{ width: 200, height: 200 }} 

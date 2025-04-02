@@ -1,15 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { HomeScreen } from './screens/HomeScreen';
 import { ShowItem } from './screens/ShowItemScreen';
@@ -18,6 +9,7 @@ import { ListItem } from './screens/ListItemScreen';
 import "./global.css"
 import { ItemsProvider } from './context/ItemsContext';
 import { PaperProvider } from 'react-native-paper';
+import FlashMessage from 'react-native-flash-message';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,16 +28,14 @@ const App = () => {
           <Stack.Screen name='List Item' component={ListItem}/>
       </Stack.Navigator>
     </NavigationContainer>
-
+    <FlashMessage position="top" hideStatusBar={true}/>
     </SafeAreaProvider>
+
     </ItemsProvider>
     </PaperProvider>  
     
   );
 }
 
-const styles = StyleSheet.create({
-
-});
 
 export default App;
