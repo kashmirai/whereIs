@@ -28,7 +28,7 @@ const App = () => {
           <Stack.Screen name='List Item' component={ListItem}/>
       </Stack.Navigator>
     </NavigationContainer>
-    <FlashMessage position="top" hideStatusBar={true}/>
+    <FlashMessage position="center" hideStatusBar={true}/>
     </SafeAreaProvider>
 
     </ItemsProvider>

@@ -5,7 +5,7 @@ import Geolocation from 'react-native-geolocation-service';
 import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera";
 import { CameraComponent } from "../components/Camera";
 import { useItems } from "../context/ItemsContext";
-import { HelperText, TextInput} from 'react-native-paper';
+import { HelperText, IconButton, TextInput} from 'react-native-paper';
 import { showMessage } from "react-native-flash-message";
 
 
@@ -37,15 +37,16 @@ export const CreateItem = () => {
     if (onkoVirheita) {
       showMessage({
         message: "Tarkista lomake, kaikki kentät ovat pakollisia.",
-        type: "danger",
-        duration: 3000,})
+        type: "danger"
+      })
       return;
     } else {
       showMessage({
         message: "Esine tallennettu onnistuneesti.",
-        type: "success",
-        duration: 3000,})
+        type: "success"
+      })
       addItem(tiedot); 
+      
     }
   }
 
@@ -98,6 +99,10 @@ export const CreateItem = () => {
   }
 }, [kuvanTiedot]);
 
+const PoistaKuva = () => {
+  setKuvanTiedot(""); 
+  setTiedot(prev => ({ ...prev, kuva: "" }));}
+
 
 const tarkastaLomake = () => {
 
@@ -138,12 +143,23 @@ const tarkastaLomake = () => {
           <TextInput className={`border p-2 ${virheilmoitukset.kuvaus ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}/>
           {virheilmoitukset.kuvaus && <HelperText type="error">{virheilmoitukset.kuvaus}</HelperText>}
 
-          <Image 
-          source={{ uri: `file://${kuvanTiedot}` }} 
-          style={{ width: 200, height: 200 }} 
-          />
 
-          <View className="mt-10">
+          {tiedot.kuva 
+          ?<View className="mt-5" style={{flexDirection: "row", alignItems : "center"}}>
+            <Image
+            source={{ uri: `file://${kuvanTiedot}` }}
+            style={{ width: 100, height: 100, aspectRatio: 1, marginRight : 10 }}
+            resizeMode="cover"
+            />
+            <Text className="text-sm italic" style = {{flex : 1, marginRight : 10}}>{kuvanTiedot}</Text>
+            <IconButton icon = "delete" onPress={() => PoistaKuva()}/>
+          </View>
+          : <></>
+          }
+
+
+
+          <View className="mt-5">
           <Button title="Add Image" onPress={() => kaynnistaKamera()}/>
           </View>
 
@@ -157,7 +173,7 @@ const tarkastaLomake = () => {
               setLupa = {setLupa}
               kuvanTiedot = {kuvanTiedot}
               setKuvanTiedot = {setKuvanTiedot}/> 
-          : <Text>Ei lupaa</Text> }
+          : <></> }
         </SafeAreaView>
 
     )
@@ -166,13 +182,13 @@ const tarkastaLomake = () => {
 
 const styles = StyleSheet.create({
   camera: {
-    position: 'absolute', // Asetetaan kamera absoluuttisesti
+    position: 'absolute', 
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0, // Peittää koko ruudun
+    bottom: 0,
     width: '100%',
-    height: '100%', // Tällä varmistetaan, että kamera täyttää koko näytön
+    height: '100%',
   },
   button : {
     flex : 1,
@@ -188,6 +204,4 @@ const styles = StyleSheet.create({
   }
 });
 
-function alert(arg0: string) {
-  throw new Error("Function not implemented.");
-}
+
