@@ -17,6 +17,7 @@ import { CreateItem } from './screens/CreateItemScreen';
 import { ListItem } from './screens/ListItemScreen';
 import "./global.css"
 import { ItemsProvider } from './context/ItemsContext';
+import { PaperProvider } from 'react-native-paper';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ const Stack = createNativeStackNavigator();
 const App = () => { 
 
   return (
+    <PaperProvider>
     <ItemsProvider>
     <SafeAreaProvider>
     <NavigationContainer>
@@ -37,7 +39,8 @@ const App = () => {
 
     </SafeAreaProvider>
     </ItemsProvider>
-
+    </PaperProvider>  
+    
   );
 }
 

@@ -5,6 +5,8 @@ import Geolocation from 'react-native-geolocation-service';
 import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera";
 import { CameraComponent } from "../components/Camera";
 import { useItems } from "../context/ItemsContext";
+import { TextInput as TextInput2} from 'react-native-paper';
+
 
 interface Location {
   latitude: number;
@@ -124,6 +126,7 @@ const tarkastaLomake = () => {
           <Text className="mt-4 mb-1">Description</Text>
           <TextInput className={`border p-2 ${virheilmoitukset.kuvaus ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}></TextInput>
 
+          <TextInput2></TextInput2>
           <Image 
           source={{ uri: `file://${kuvanTiedot}` }} 
           style={{ width: 200, height: 200 }} 
