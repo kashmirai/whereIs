@@ -122,7 +122,6 @@ const tarkastaLomake = () => {
 }
 
 
-
     return (
         
         <SafeAreaView style={{flex : 1}} className="mx-1">
@@ -156,8 +155,6 @@ const tarkastaLomake = () => {
           </View>
           : <></>
           }
-
-
 
           <View className="mt-5">
           <Button title="Add Image" onPress={() => kaynnistaKamera()}/>

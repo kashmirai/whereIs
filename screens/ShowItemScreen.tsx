@@ -2,10 +2,14 @@ import { Text } from "react-native"
 import React from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 
-export const ShowItem = () => {
+import { RouteProp } from '@react-navigation/native';
+
+export const ShowItem = ({ route }: { route: RouteProp<{ params: { item: any } }, 'params'> }) => {
+
+    const { item } = route.params;
     return (
         <SafeAreaView>
-          <Text>Moi komponentista!</Text>
+          <Text>{item.nimi}, {item.kuvaus}</Text>
         </SafeAreaView>
 
     )
