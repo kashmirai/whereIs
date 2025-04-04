@@ -11,6 +11,7 @@ import { ItemsProvider } from './context/ItemsContext';
 import { PaperProvider } from 'react-native-paper';
 import FlashMessage from 'react-native-flash-message';
 
+
 const Stack = createNativeStackNavigator();
 
 
@@ -23,7 +24,7 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
           <Stack.Screen name='Home' component={HomeScreen}/>
-          <Stack.Screen name='ShowItem' component={ShowItem}/>
+          <Stack.Screen name='ShowItem' component={ShowItem as React.ComponentType<any>}/>
           <Stack.Screen name='Add Item' component={CreateItem}/>
           <Stack.Screen name='List Item' component={ListItem}/>
       </Stack.Navigator>

@@ -1,4 +1,4 @@
-import { Button, Text, View, PermissionsAndroid, StyleSheet, Touchable, TouchableOpacity, Image } from "react-native"
+import { Text, View, PermissionsAndroid, StyleSheet, Touchable, TouchableOpacity, Image } from "react-native"
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import Geolocation from 'react-native-geolocation-service';
@@ -7,6 +7,7 @@ import { CameraComponent } from "../components/Camera";
 import { useItems } from "../context/ItemsContext";
 import { HelperText, IconButton, TextInput} from 'react-native-paper';
 import { showMessage } from "react-native-flash-message";
+import { Button } from 'react-native-paper';
 
 
 interface Location {
@@ -46,6 +47,12 @@ export const CreateItem = () => {
         type: "success"
       })
       addItem(tiedot); 
+      setTiedot(prev => ({
+        ...prev,
+        nimi: '',
+        kuvaus: '',
+        kuva : ''
+      }));
       
     }
   }
@@ -157,11 +164,11 @@ const tarkastaLomake = () => {
           }
 
           <View className="mt-5">
-          <Button title="Add Image" onPress={() => kaynnistaKamera()}/>
+          <Button mode="contained" onPress={() => kaynnistaKamera()}>Add Image</Button>
           </View>
 
           <View className="mt-3">
-          <Button title="Save" onPress={() => tallennaTiedot()}/>
+          <Button mode="contained" onPress={() => tallennaTiedot()}>Save Item</Button>
           </View>
           
           {lupa 

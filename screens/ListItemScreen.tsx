@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { useItems } from "../context/ItemsContext";
 import { useNavigation } from "@react-navigation/native";
 import { ShowItem } from "./ShowItemScreen";
+import { Card, Searchbar } from "react-native-paper";
 
 export const ListItem = ({navigation} : any) => {
 
@@ -11,12 +12,25 @@ export const ListItem = ({navigation} : any) => {
     
 
     return (
-        <SafeAreaView>
-          <Text>ListItemScreen</Text>
+        <SafeAreaView className="m-1">
+          <Text className="text-xl font-bold mb-4">Lista esineistä</Text>
+
+          <Searchbar
+          placeholder="Search"
+          onChangeText={(query) => console.log(query)}
+          value=""
+          />
+
           <FlatList data={items} renderItem={({item}) => (
             <TouchableOpacity onPress={() => navigation.navigate("ShowItem", { item })}>
-            <Text style={styles.item}>{item.nimi}</Text>
-            {item.kuva ? <Image source={{ uri: `file://${item.kuva}` } } style={{width: 100, height: 100}}/> : <Text>ei kuvaa</Text>}
+            <Card className="mt-2">
+                <Card.Content className="flex flex-row items-center justify-between">
+                  <Image source={{ uri: `file://${item.kuva}` } } style={{width: 50, aspectRatio : 1}}/>
+                    <View className="flex-1 ml-5">
+                        <Text className="text-lg">{item.nimi}</Text>
+                    </View>
+                </Card.Content>
+            </Card>
             </TouchableOpacity>   
           )}/>
         </SafeAreaView>
