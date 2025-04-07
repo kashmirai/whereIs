@@ -1,14 +1,32 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useItems } from "../context/ItemsContext";
 import { useNavigation } from "@react-navigation/native";
 import { ShowItem } from "./ShowItemScreen";
 import { Card, Searchbar } from "react-native-paper";
+import { supabase } from "../supabaseClient";
 
 export const ListItem = ({navigation} : any) => {
 
     const { items } = useItems();
+
+    useEffect(() => {
+        const fetchData = async () => {
+          const { data, error } = await supabase
+            .from('Item')
+            .select();
+    
+          if (error) {
+            console.error('Virhe haettaessa dataa:', error);
+          } else {
+            console.log('Haettu data:', data);
+          }
+        };
+    
+        fetchData();
+      }, []);
+    
     
 
     return (

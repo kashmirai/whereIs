@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
+import { supabase } from '../supabaseClient';
 
 interface Item {
     nimi : string;
@@ -20,7 +21,8 @@ const ItemsContext = createContext<ItemsContextType | undefined>(undefined);
 export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [items, setItems] = useState<Item[]>([]);
 
-    const addItem = (item: Item) => {
+    const addItem = async (item: Item) => {
+        const {error} = await supabase.from('Item').insert([item])
         setItems((prevItems) => [...prevItems, item]);
     };
 
