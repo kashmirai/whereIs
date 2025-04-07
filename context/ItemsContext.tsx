@@ -14,6 +14,7 @@ interface Item {
 interface ItemsContextType {
     items: Item[];
     addItem: (item: Item) => void;
+    setItems: React.Dispatch<React.SetStateAction<Item[]>>;
 }
 
 const ItemsContext = createContext<ItemsContextType | undefined>(undefined);
@@ -27,7 +28,7 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     return (
-        <ItemsContext.Provider value={{ items, addItem }}>
+        <ItemsContext.Provider value={{ items, addItem, setItems }}>
             {children}
         </ItemsContext.Provider>
     );

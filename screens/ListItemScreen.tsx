@@ -9,7 +9,7 @@ import { supabase } from "../supabaseClient";
 
 export const ListItem = ({navigation} : any) => {
 
-    const { items } = useItems();
+    const { items, setItems } = useItems();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -20,6 +20,7 @@ export const ListItem = ({navigation} : any) => {
           if (error) {
             console.error('Virhe haettaessa dataa:', error);
           } else {
+            setItems(data);
             console.log('Haettu data:', data);
           }
         };
