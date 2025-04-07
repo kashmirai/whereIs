@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ShowItem } from "./ShowItemScreen";
 import { Card, Searchbar } from "react-native-paper";
 import { supabase } from "../supabaseClient";
+import { SearchComponent } from "../components/Search";
 
 export const ListItem = ({navigation} : any) => {
 
@@ -34,11 +35,7 @@ export const ListItem = ({navigation} : any) => {
         <SafeAreaView className="m-1">
           <Text className="text-xl font-bold mb-4">Lista esineistä</Text>
 
-          <Searchbar
-          placeholder="Search"
-          onChangeText={(query) => console.log(query)}
-          value=""
-          />
+        <SearchComponent/>
 
           <FlatList data={items} renderItem={({item}) => (
             <TouchableOpacity onPress={() => navigation.navigate("ShowItem", { item })}>

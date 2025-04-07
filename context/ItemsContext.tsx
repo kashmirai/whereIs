@@ -15,11 +15,13 @@ interface ItemsContextType {
     items: Item[];
     addItem: (item: Item) => void;
     setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+    searchItems: (searchQuery: string) => void;
 }
 
 const ItemsContext = createContext<ItemsContextType | undefined>(undefined);
 
 export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
     const [items, setItems] = useState<Item[]>([]);
 
     const addItem = async (item: Item) => {
@@ -27,8 +29,20 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setItems((prevItems) => [...prevItems, item]);
     };
 
+
+    const searchItems = async (searchQuery: string) => {
+        const {data, error} = await supabase.from('Item').select().ilike('nimi', `%${searchQuery}%`);
+        console.log('Haettu data:', data);
+        if (error) {
+            console.error('Virhe haettaessa dataa:', error);
+        } else {
+            setItems(data as Item[]);
+        }
+    }
+    
+
     return (
-        <ItemsContext.Provider value={{ items, addItem, setItems }}>
+        <ItemsContext.Provider value={{ items, addItem, setItems, searchItems }}>
             {children}
         </ItemsContext.Provider>
     );
