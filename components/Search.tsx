@@ -17,7 +17,7 @@ export const SearchComponent = () => {
         } else {
             searchItems('');
         }
-    }, [searchQuery, searchItems]);
+    }, [searchQuery]);
     
     return (
         <>

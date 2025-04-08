@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext } from 'react';
 import { supabase } from '../supabaseClient';
 
 interface Item {
+    id : number;
     nimi : string;
     kuvaus : string;
     sijainti : {
@@ -13,9 +14,14 @@ interface Item {
 
 interface ItemsContextType {
     items: Item[];
+    oneItem : Item | null;
     addItem: (item: Item) => void;
     setItems: React.Dispatch<React.SetStateAction<Item[]>>;
     searchItems: (searchQuery: string) => void;
+    deleteItem: (id: number) => void;
+    searchOne: (id: number) => void;
+    dialogi : boolean;
+    setDialogi : React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ItemsContext = createContext<ItemsContextType | undefined>(undefined);
@@ -23,6 +29,8 @@ const ItemsContext = createContext<ItemsContextType | undefined>(undefined);
 export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     const [items, setItems] = useState<Item[]>([]);
+    const [oneItem, setOneItem] = useState<Item | null>(null);
+    const [dialogi, setDialogi] = useState<boolean>(false);
 
     const addItem = async (item: Item) => {
         const {error} = await supabase.from('Item').insert([item])
@@ -39,10 +47,27 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setItems(data as Item[]);
         }
     }
+
+    const searchOne = async (id: number) => {
+        const {data, error} = await supabase.from('Item').select().eq('id', id);
+        if (data && data.length > 0) {
+            setOneItem(data[0] as Item);
+        } else {
+            console.error('Ei löytynyt esinettä id:llä:', id);
+
+        }
+
+     }
+
+    const deleteItem = async (id: number) => {
+        const {error} = await supabase.from('Item').delete().eq('id', id);
+        searchItems('');
+        setDialogi(false);
+    }
     
 
     return (
-        <ItemsContext.Provider value={{ items, addItem, setItems, searchItems }}>
+        <ItemsContext.Provider value={{ items, oneItem, dialogi, setDialogi, addItem, setItems, searchItems, deleteItem, searchOne }}>
             {children}
         </ItemsContext.Provider>
     );

@@ -1,16 +1,23 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useItems } from "../context/ItemsContext";
 import { useNavigation } from "@react-navigation/native";
 import { ShowItem } from "./ShowItemScreen";
-import { Card, Searchbar } from "react-native-paper";
+import { Button, Card, Dialog, IconButton, Portal, Searchbar } from "react-native-paper";
 import { supabase } from "../supabaseClient";
 import { SearchComponent } from "../components/Search";
 
 export const ListItem = ({navigation} : any) => {
 
-    const { items, setItems } = useItems();
+    const { items, oneItem, dialogi, setDialogi, setItems, searchOne, deleteItem } = useItems();
+    
+
+
+    const avaaDialogi = (id: number) => {
+      setDialogi(true);
+      searchOne(id);
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,11 +52,30 @@ export const ListItem = ({navigation} : any) => {
                     <View className="flex-1 ml-5">
                         <Text className="text-lg">{item.nimi}</Text>
                     </View>
+                    <IconButton icon = "delete" onPress={() => avaaDialogi(item.id)}></IconButton>
                 </Card.Content>
             </Card>
             </TouchableOpacity>   
           )}/>
+
+        <Portal>
+          <Dialog visible={dialogi} onDismiss={() => setDialogi(false)}>
+            <Dialog.Title>Vahvista poisto</Dialog.Title>
+            <Dialog.Content>
+              <Text>Haluatko varmasti poistaa esineen {oneItem?.nimi}?</Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => deleteItem(oneItem!.id)}>Poista</Button>
+              <Button onPress={() => setDialogi(false)}>Peruuta</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+
+
+
         </SafeAreaView>
+
+        
 
     )
 
