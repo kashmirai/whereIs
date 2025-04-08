@@ -59,10 +59,13 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
      }
 
-    const deleteItem = async (id: number) => {
+    const deleteItem = async (id: number, onSuccess? : () => void) => {
         const {error} = await supabase.from('Item').delete().eq('id', id);
         searchItems('');
         setDialogi(false);
+        if (onSuccess) {
+            onSuccess();
+        } 
     }
     
 

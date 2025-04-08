@@ -13,12 +13,6 @@ export const ListItem = ({navigation} : any) => {
     const { items, oneItem, dialogi, setDialogi, setItems, searchOne, deleteItem } = useItems();
     
 
-
-    const avaaDialogi = (id: number) => {
-      setDialogi(true);
-      searchOne(id);
-    }
-
     useEffect(() => {
         const fetchData = async () => {
           const { data, error } = await supabase
@@ -52,24 +46,11 @@ export const ListItem = ({navigation} : any) => {
                     <View className="flex-1 ml-5">
                         <Text className="text-lg">{item.nimi}</Text>
                     </View>
-                    <IconButton icon = "delete" onPress={() => avaaDialogi(item.id)}></IconButton>
+
                 </Card.Content>
             </Card>
             </TouchableOpacity>   
           )}/>
-
-        <Portal>
-          <Dialog visible={dialogi} onDismiss={() => setDialogi(false)}>
-            <Dialog.Title>Vahvista poisto</Dialog.Title>
-            <Dialog.Content>
-              <Text>Haluatko varmasti poistaa esineen {oneItem?.nimi}?</Text>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={() => deleteItem(oneItem!.id)}>Poista</Button>
-              <Button onPress={() => setDialogi(false)}>Peruuta</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
 
 
 
