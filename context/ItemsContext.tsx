@@ -22,6 +22,9 @@ interface ItemsContextType {
     searchOne: (id: number) => void;
     dialogi : boolean;
     setDialogi : React.Dispatch<React.SetStateAction<boolean>>;
+    muokkausTila : boolean;
+    setMuokkausTila : React.Dispatch<React.SetStateAction<boolean>>;
+    editItem: (id: number, updatedItem: Item) => void;
 }
 
 const ItemsContext = createContext<ItemsContextType | undefined>(undefined);
@@ -31,6 +34,7 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [items, setItems] = useState<Item[]>([]);
     const [oneItem, setOneItem] = useState<Item | null>(null);
     const [dialogi, setDialogi] = useState<boolean>(false);
+    const [muokkausTila, setMuokkausTila] = useState<boolean>(false);
 
     const addItem = async (item: Item) => {
         const {error} = await supabase.from('Item').insert([item])
@@ -67,10 +71,14 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             onSuccess();
         } 
     }
+
+    const editItem = async (id: number, updatedItem: Item) => {
+        const {error} = await supabase.from('Item').update(updatedItem).eq('id', id); 
+    }
     
 
     return (
-        <ItemsContext.Provider value={{ items, oneItem, dialogi, setDialogi, addItem, setItems, searchItems, deleteItem, searchOne }}>
+        <ItemsContext.Provider value={{ items, oneItem, dialogi, setDialogi, addItem, setItems, searchItems, deleteItem, searchOne, muokkausTila, setMuokkausTila, editItem }}>
             {children}
         </ItemsContext.Provider>
     );
