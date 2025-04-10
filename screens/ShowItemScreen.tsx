@@ -1,16 +1,26 @@
 import { Image, StyleSheet, Text, View } from "react-native"
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Button, Dialog, IconButton, Portal, TextInput } from 'react-native-paper';
 import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import { useItems } from "../context/ItemsContext";
+import { useCamera } from "../hooks/useCamera";
+import { CameraComponent } from "../components/Camera";
 
 export const ShowItem = ({ route, navigation }: { navigation : any, route: RouteProp<{ params: { item: any } }, 'params'> }) => {
 
     const { item } = route.params;
-    const {dialogi, oneItem, setDialogi, searchOne, deleteItem, muokkausTila, setMuokkausTila, editItem} = useItems();
+    const {dialogi, oneItem, setDialogi, dialogTyyppi, setDialogTyyppi, searchOne, deleteItem, muokkausTila, setMuokkausTila, editItem} = useItems();
+    const { kamera, setKamera, kuvanTiedot, setKuvanTiedot, hasPermission, kaynnistaKamera} = useCamera();
 
-        const avaaDialogi = (id: number) => {
+        const avaaPoistoDialogi = (id: number) => {
+          setDialogTyyppi('delete')
+          setDialogi(true);
+          searchOne(id);
+        }
+
+        const avaaMuokkausDialogi = (id: number) => {
+          setDialogTyyppi('edit')
           setDialogi(true);
           searchOne(id);
         }
@@ -21,58 +31,98 @@ export const ShowItem = ({ route, navigation }: { navigation : any, route: Route
             }, [setMuokkausTila])
         );
 
+       const [tiedot, setTiedot] = useState({
+         nimi: item.nimi,
+         kuvaus: item.kuvaus,
+         sijainti: { latitude: item.sijainti.latitude, longitude: item.sijainti.longitude },
+         kuva: item.kuva
+       });   
+
+         useEffect(() => {
+         if (kuvanTiedot) {
+           setTiedot(prev => ({ ...prev, kuva: kuvanTiedot }));
+           console.log(tiedot);
+         }
+       }, [kuvanTiedot]);
+
 
     return (
         <SafeAreaView>
 
           {muokkausTila 
             ? <View style={styles.editContainer}>
-                <TextInput style={styles.textInput} defaultValue={item.nimi} />
-                <TextInput style={styles.textInput} defaultValue={item.kuvaus} />
+                <TextInput style={styles.textInput} defaultValue={tiedot.nimi} onChangeText={(text) => setTiedot(prev => ({ ...prev, nimi: text }))}/>
+                <TextInput style={styles.textInput} defaultValue={tiedot.kuvaus} onChangeText={(text) => setTiedot(prev => ({ ...prev, kuvaus: text }))} />
                 <View style={styles.imageWrapper}>
-                  <Image source={{ uri: `file://${item.kuva}` }} style={styles.image} />
+                  <Image source={{ uri: `file://${tiedot.kuva}` }} style={styles.image} />
                   <IconButton
                     icon="pen"
                     size={24}
                     style={styles.editIcon}
-                    onPress={() => console.log("Edit image")}
+                    onPress={() => kaynnistaKamera()}
                   />
                 </View>
                 <View style={styles.buttonRow}>
                   <Button mode="contained" onPress={() => setMuokkausTila(!muokkausTila)}>Peru</Button>
-                  <Button mode="contained" onPress={() => console.log("Muokataan")}>Tallenna muutokset</Button>
+                  <Button mode="contained" onPress={() => {
+                  avaaMuokkausDialogi(item.id);
+                  }}>Tallenna muutokset</Button>
                 </View>
               </View>
+
+            
+
             : <View className="flex items-center">
               <View className="flex flex-row justify-between items-center mt-5">
                 <Text className="text-xl font-bold text-center">{item.nimi}</Text>
                   <View className="flex flex-row">
                     <IconButton icon = "pen" onPress={() => console.log("muokataan", item.id, setMuokkausTila(!muokkausTila))}></IconButton>
-                    <IconButton icon = "delete" onPress={() => avaaDialogi(item.id)}></IconButton>
+                    <IconButton icon = "delete" onPress={() => avaaPoistoDialogi(item.id)}></IconButton>
                   </View>
 
               </View>
 
-              <Text>{item.kuvaus}</Text>
+              <Text>{tiedot.kuvaus}</Text>
                 <Image source={{ uri: `file://${item.kuva}` } } style={{width: 300, aspectRatio : 9/16}} className="mt-5"/>
                 <Button mode="contained" onPress={() => navigation.goBack()}>Back</Button>
               </View>
           }
 
 
-
                   <Portal>
                     <Dialog visible={dialogi} onDismiss={() => setDialogi(false)}>
-                      <Dialog.Title>Vahvista poisto</Dialog.Title>
+                      <Dialog.Title>{dialogTyyppi === 'delete' ? 'Vahvista Poisto' : 'Muokkaa item' }</Dialog.Title>
                       <Dialog.Content>
-                        <Text>Haluatko varmasti poistaa esineen {oneItem?.nimi}?</Text>
+                        <Text>{dialogTyyppi === 'delete' ? `Haluatko varmasti poistaa esineen ${oneItem?.nimi}?` : ` Haluatko varmasti muokata itemiä ${oneItem?.nimi}?` }</Text>
                       </Dialog.Content>
-                      <Dialog.Actions>
-                        <Button onPress={() => { deleteItem(oneItem!.id); navigation.goBack(); }}>Poista</Button>
+                      <Dialog.Actions> 
+                        {dialogTyyppi === 'delete' 
+                        ? <Button onPress={() => { 
+                          if (oneItem?.id !== undefined) {
+                              deleteItem(oneItem.id); 
+                              navigation.goBack(); 
+                          } 
+                          }}>Poista</Button>
+                        : <Button onPress={() => { 
+                          if (oneItem?.id !== undefined) {
+                              editItem(oneItem.id, tiedot); 
+                              navigation.goBack(); 
+                          } 
+                      }}>Muokkaa</Button>
+                         }
+
                         <Button onPress={() => setDialogi(false)}>Peruuta</Button>
                       </Dialog.Actions>
                     </Dialog>
                   </Portal>
+
+                  {kamera 
+                  ? <CameraComponent 
+                      kamera = {kamera} 
+                      setKamera = {setKamera}
+                      kuvanTiedot = {kuvanTiedot}
+                      setKuvanTiedot = {setKuvanTiedot}/> 
+                  : <></> }
 
         </SafeAreaView>
 
@@ -129,5 +179,14 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         width: "80%",
         marginTop: 16,
+    },
+    fullscreen: {
+        flex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'black',
     },
 });

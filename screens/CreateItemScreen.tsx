@@ -8,6 +8,7 @@ import { useItems } from "../context/ItemsContext";
 import { HelperText, IconButton, TextInput} from 'react-native-paper';
 import { showMessage } from "react-native-flash-message";
 import { Button } from 'react-native-paper';
+import { useCamera } from "../hooks/useCamera";
 
 
 interface Location {
@@ -30,6 +31,13 @@ export const CreateItem = () => {
   const [virheilmoitukset, setVirheIlmoitukset] = useState<Virheet>({});
 
   const {addItem} = useItems();
+  const { 
+    kamera, 
+    setKamera, 
+    kuvanTiedot,
+    setKuvanTiedot,
+    hasPermission,
+    kaynnistaKamera} = useCamera();
 
   const tallennaTiedot = () => {
 
@@ -74,14 +82,8 @@ export const CreateItem = () => {
   };
 
   const [location, setLocation] = useState<Location | null>(null);  
-  const [lupa, setLupa] = useState<boolean>(false);
-  const [kuvanTiedot, setKuvanTiedot] = useState<string>("");
-  const { hasPermission, requestPermission } = useCameraPermission();
 
-  const kaynnistaKamera = () => {
-    requestPermission();
-    setLupa(true);
-  }
+
 
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
@@ -171,10 +173,10 @@ const tarkastaLomake = () => {
           <Button mode="contained" onPress={() => tallennaTiedot()}>Save Item</Button>
           </View>
           
-          {lupa 
+          {kamera 
           ? <CameraComponent 
-              lupa = {lupa} 
-              setLupa = {setLupa}
+              kamera = {kamera} 
+              setKamera = {setKamera}
               kuvanTiedot = {kuvanTiedot}
               setKuvanTiedot = {setKuvanTiedot}/> 
           : <></> }

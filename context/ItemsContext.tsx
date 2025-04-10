@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext } from 'react';
 import { supabase } from '../supabaseClient';
 
 interface Item {
-    id : number;
+    id? : number;
     nimi : string;
     kuvaus : string;
     sijainti : {
@@ -22,6 +22,8 @@ interface ItemsContextType {
     searchOne: (id: number) => void;
     dialogi : boolean;
     setDialogi : React.Dispatch<React.SetStateAction<boolean>>;
+    dialogTyyppi : 'edit' | 'delete' | null;
+    setDialogTyyppi : React.Dispatch<React.SetStateAction<'edit' | 'delete' | null>>;
     muokkausTila : boolean;
     setMuokkausTila : React.Dispatch<React.SetStateAction<boolean>>;
     editItem: (id: number, updatedItem: Item) => void;
@@ -34,6 +36,7 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [items, setItems] = useState<Item[]>([]);
     const [oneItem, setOneItem] = useState<Item | null>(null);
     const [dialogi, setDialogi] = useState<boolean>(false);
+    const [dialogTyyppi, setDialogTyyppi] = useState<'edit' | 'delete' | null>(null);
     const [muokkausTila, setMuokkausTila] = useState<boolean>(false);
 
     const addItem = async (item: Item) => {
@@ -72,13 +75,22 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         } 
     }
 
-    const editItem = async (id: number, updatedItem: Item) => {
-        const {error} = await supabase.from('Item').update(updatedItem).eq('id', id); 
+    const editItem = async (id: number, updatedItem: Item, onSuccess?: () => void) => {
+        const {data, error} = await supabase.from('Item').update(updatedItem).eq('id', id).select().single(); 
+        
+        if (error) {
+            console.error("Virhe päivitettäessä esinettä:", error.message);
+        } else {
+            console.log("Esine päivitetty onnistuneesti", data);
+            if ( onSuccess) {
+                onSuccess();
+            }
+        }
     }
     
 
     return (
-        <ItemsContext.Provider value={{ items, oneItem, dialogi, setDialogi, addItem, setItems, searchItems, deleteItem, searchOne, muokkausTila, setMuokkausTila, editItem }}>
+        <ItemsContext.Provider value={{ items, oneItem, dialogi, setDialogi, dialogTyyppi, setDialogTyyppi, addItem, setItems, searchItems, deleteItem, searchOne, muokkausTila, setMuokkausTila, editItem }}>
             {children}
         </ItemsContext.Provider>
     );
