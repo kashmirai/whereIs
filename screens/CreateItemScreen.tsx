@@ -9,12 +9,8 @@ import { HelperText, IconButton, TextInput} from 'react-native-paper';
 import { showMessage } from "react-native-flash-message";
 import { Button } from 'react-native-paper';
 import { useCamera } from "../hooks/useCamera";
+import { useLocation } from "../hooks/useLocation";
 
-
-interface Location {
-  latitude: number;
-  longitude: number;
-}
 interface Virheet {
   nimi?: string;
   kuvaus?: string;
@@ -31,13 +27,8 @@ export const CreateItem = () => {
   const [virheilmoitukset, setVirheIlmoitukset] = useState<Virheet>({});
 
   const {addItem} = useItems();
-  const { 
-    kamera, 
-    setKamera, 
-    kuvanTiedot,
-    setKuvanTiedot,
-    hasPermission,
-    kaynnistaKamera} = useCamera();
+  const {location} = useLocation();
+  const { kamera, setKamera, kuvanTiedot, setKuvanTiedot, hasPermission, kaynnistaKamera} = useCamera();
 
   const tallennaTiedot = () => {
 
@@ -65,48 +56,17 @@ export const CreateItem = () => {
     }
   }
 
-  const requestLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('You can use the location');
-        getCurrentLocation();
-      } else {
-        console.log('Location permission denied');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
-
-  const [location, setLocation] = useState<Location | null>(null);  
-
-
-
-  const getCurrentLocation = () => {
-    Geolocation.getCurrentPosition(
-      position => {
-        const {latitude, longitude} = position.coords;
-        setLocation({latitude, longitude});
-        console.log(latitude, longitude);
-        setTiedot(prev => ({...prev, sijainti : {latitude, longitude}}));
-      }
-    )
-  }
-  
-
-
-  useEffect(() => {
-    requestLocationPermission();
-  }, []);
-
   useEffect(() => {
   if (kuvanTiedot) {
     setTiedot(prev => ({ ...prev, kuva: kuvanTiedot }));
   }
 }, [kuvanTiedot]);
+
+useEffect(() => {
+  if (location) {
+    setTiedot(prev => ({ ...prev, sijainti: location }));
+  }
+}, [location]);
 
 const PoistaKuva = () => {
   setKuvanTiedot(""); 

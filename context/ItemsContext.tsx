@@ -81,7 +81,12 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (error) {
             console.error("Virhe päivitettäessä esinettä:", error.message);
         } else {
-            console.log("Esine päivitetty onnistuneesti", data);
+            setItems((prevItems) =>
+                prevItems.map((item) =>
+                    item.id === id ? { ...item, ...updatedItem } : item
+                )
+            );
+            setDialogi(false);
             if ( onSuccess) {
                 onSuccess();
             }
