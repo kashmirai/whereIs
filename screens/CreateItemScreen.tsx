@@ -8,6 +8,7 @@ import { showMessage } from "react-native-flash-message";
 import { Button } from 'react-native-paper';
 import { useCamera } from "../hooks/useCamera";
 import { useLocation } from "../hooks/useLocation";
+import { supabase } from "../supabaseClient";
 
 interface Virheet {
   nimi?: string;
@@ -22,6 +23,7 @@ interface Tiedot {
 
 export const CreateItem = () => {
 
+  const [user, setUser] = useState<any>(null);
   const [tiedot, setTiedot] = useState<Tiedot>({
     nimi: "",
     kuvaus: "",
@@ -34,65 +36,93 @@ export const CreateItem = () => {
   const {location} = useLocation();
   const { kamera, setKamera, kuvanTiedot, setKuvanTiedot, hasPermission, kaynnistaKamera} = useCamera();
 
-  const tallennaTiedot = () => {
+    const tallennaTiedot = async () => {
 
-    const lomakeVirheet = tarkastaLomake();
-    const onkoVirheita = Object.keys(lomakeVirheet).length > 0;
-    if (onkoVirheita) {
-      showMessage({
-        message: "Tarkista lomake, kaikki kentät ovat pakollisia.",
-        type: "danger"
-      })
-      return;
-    } else {
+      const lomakeVirheet = tarkastaLomake();
+      const onkoVirheita = Object.keys(lomakeVirheet).length > 0;
+
+      if (!user) {
+        showMessage({
+          message: "Sisäänkirjautuminen vaaditaan jos haluat tallentaa esineen",
+          type: "danger"
+        });
+        return;
+      }
+    
+      if (onkoVirheita) {
+        showMessage({
+          message: "Tarkista lomake, kaikki kentät ovat pakollisia.",
+          type: "danger"
+        })
+        return;
+      }
+    
+      const result = await addItem(tiedot);
+    
+      if (!result.success) {
+        showMessage({
+          message: "Virhe tallennuksessa",
+          description: result.error || "Tuntematon virhe",
+          type: "danger"
+        });
+        return;
+      }
+    
       showMessage({
         message: "Esine tallennettu onnistuneesti.",
         type: "success"
-      })
-      addItem(tiedot); 
-      console.log("Lisätään esine", tiedot);
+      });
+    
       setTiedot(prev => ({
         ...prev,
         nimi: '',
         kuvaus: '',
-        kuva : ''
+        kuva: ''
       }));
-      
     }
+    
+
+    useEffect(() => {
+    if (kuvanTiedot) {
+      setTiedot(prev => ({ ...prev, kuva: kuvanTiedot }));
+    }
+  }, [kuvanTiedot]);
+
+  useEffect(() => {
+    if (location) {
+      setTiedot(prev => ({ ...prev, sijainti: location }));
+    }
+  }, [location]);
+
+  const PoistaKuva = () => {
+    setKuvanTiedot(""); 
+    setTiedot(prev => ({ ...prev, kuva: "" }));}
+
+
+  const tarkastaLomake = () => {
+
+    let virheet : {[key : string] : string} = {};
+    Object.entries(tiedot).forEach(([key, value]) => {
+      if (tiedot.nimi.trim() === "") {
+        virheet.nimi = "Nimi on pakollinen kenttä.";
+      }
+      if (tiedot.kuvaus.trim() === "") {
+        virheet.kuvaus = "Kuvaus on pakollinen kenttä.";
+      }
+    });
+
+    setVirheIlmoitukset(virheet);
+    return virheet;
   }
 
   useEffect(() => {
-  if (kuvanTiedot) {
-    setTiedot(prev => ({ ...prev, kuva: kuvanTiedot }));
-  }
-}, [kuvanTiedot]);
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
 
-useEffect(() => {
-  if (location) {
-    setTiedot(prev => ({ ...prev, sijainti: location }));
-  }
-}, [location]);
-
-const PoistaKuva = () => {
-  setKuvanTiedot(""); 
-  setTiedot(prev => ({ ...prev, kuva: "" }));}
-
-
-const tarkastaLomake = () => {
-
-  let virheet : {[key : string] : string} = {};
-  Object.entries(tiedot).forEach(([key, value]) => {
-    if (tiedot.nimi.trim() === "") {
-      virheet.nimi = "Nimi on pakollinen kenttä.";
-    }
-    if (tiedot.kuvaus.trim() === "") {
-      virheet.kuvaus = "Kuvaus on pakollinen kenttä.";
-    }
-  });
-
-  setVirheIlmoitukset(virheet);
-  return virheet;
-}
+    fetchUser();
+  }, []);
 
     return (
         

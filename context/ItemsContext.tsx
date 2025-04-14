@@ -15,7 +15,7 @@ interface Item {
 interface ItemsContextType {
     items: Item[];
     oneItem : Item | null;
-    addItem: (item: Item) => void;
+    addItem: (item: Item) => Promise<{ success: boolean; error?: string }>;
     setItems: React.Dispatch<React.SetStateAction<Item[]>>;
     searchItems: (searchQuery: string) => void;
     deleteItem: (id: number) => void;
@@ -39,10 +39,18 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [dialogTyyppi, setDialogTyyppi] = useState<'edit' | 'delete' | null>(null);
     const [muokkausTila, setMuokkausTila] = useState<boolean>(false);
 
-    const addItem = async (item: Item) => {
-        const {error} = await supabase.from('Item').insert([item])
+    const addItem = async (item: Item): Promise<{success : boolean, error? : string}> => {
+        const { data, error } = await supabase.from('Item').insert([item]);
+      
+        if (error) {
+          console.error("Virhe lisättäessä tietoa Supabaseen:", error.message, error.details);
+          return{success : false, error : error.message};
+        }
+      
+        console.log("Esine lisätty onnistuneesti:", data);
         setItems((prevItems) => [...prevItems, item]);
-    };
+        return {success : true};
+      };
 
 
     const searchItems = async (searchQuery: string) => {

@@ -1,15 +1,17 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useItems } from "../context/ItemsContext";
 import { Card } from "react-native-paper";
 import { supabase } from "../supabaseClient";
 import { SearchComponent } from "../components/Search";
+import { showMessage } from "react-native-flash-message";
 
 export const ListItem = ({navigation} : any) => {
 
     const { items, setItems } = useItems();
-    
+    const [user, setUser] = useState<any>(null);
+    const [virhe, setVirhe] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,6 +35,30 @@ export const ListItem = ({navigation} : any) => {
     
         fetchData();
       }, []);
+
+    useEffect(() => {
+      const fetchUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+      };
+  
+      fetchUser();
+    }, []);
+  
+
+    const navigoi = (item: any) => {
+        if (user) {
+          navigation.navigate("ShowItem", { item });
+        }
+        else {
+          setVirhe("Sisäänkirjautuminen vaaditaan");
+          showMessage({
+            message: "Sisäänkirjautuminen vaaditaan",
+            type: "danger",
+          });
+        }
+
+    }
     
     return (
         <SafeAreaView className="m-1">
@@ -41,7 +67,7 @@ export const ListItem = ({navigation} : any) => {
         <SearchComponent/>
 
           <FlatList data={items} renderItem={({item}) => (
-            <TouchableOpacity onPress={() => navigation.navigate("ShowItem", { item })}>
+            <TouchableOpacity onPress={() => navigoi(item)}>
             <Card className="mt-2">
                 <Card.Content className="flex flex-row items-center justify-between">
                   <Image source={{ uri: `file://${item.kuva}` } } style={{width: 50, aspectRatio : 1}}/>

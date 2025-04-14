@@ -10,6 +10,7 @@ import "./global.css"
 import { ItemsProvider } from './context/ItemsContext';
 import { PaperProvider } from 'react-native-paper';
 import FlashMessage from 'react-native-flash-message';
+import { LoginScreen } from './screens/LogInScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -27,6 +28,7 @@ const App = () => {
           <Stack.Screen name='ShowItem' component={ShowItem as React.ComponentType<any>}/>
           <Stack.Screen name='Add Item' component={CreateItem}/>
           <Stack.Screen name='List Item' component={ListItem}/>
+          <Stack.Screen name='Log In' component={LoginScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
     <FlashMessage position="center" hideStatusBar={true}/>
