@@ -72,18 +72,17 @@ export const ShowItem = ({ route, navigation }: { navigation : any, route: Route
 
             
 
-            : <View className="flex items-center">
+            : <View className="flex items-center bg-white">
               <View className="flex flex-row justify-between items-center mt-5">
                 <Text className="text-xl font-bold text-center">{item.nimi}</Text>
                   <View className="flex flex-row">
-                    <IconButton icon = "pen" onPress={() => console.log("muokataan", item.id, setMuokkausTila(!muokkausTila))}></IconButton>
+                    <IconButton icon = "pen" onPress={() => setMuokkausTila(!muokkausTila)}></IconButton>
                     <IconButton icon = "delete" onPress={() => avaaPoistoDialogi(item.id)}></IconButton>
                   </View>
-
               </View>
-
-              <Text>{tiedot.kuvaus}</Text>
-                <Image source={{ uri: `file://${item.kuva}` } } style={{width: 300, aspectRatio : 9/16}} className="mt-5"/>
+              <Text className="text-l">{tiedot.kuvaus}</Text>
+              <Text className="text-sm" >{tiedot.sijainti.latitude}, {tiedot.sijainti.longitude}</Text>
+                <Image source={{ uri: `file://${item.kuva}` } } style={{width: 300, aspectRatio : 9/16}} className="my-5"/>
                 <Button mode="contained" onPress={() => navigation.goBack()}>Back</Button>
               </View>
           }

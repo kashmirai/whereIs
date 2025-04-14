@@ -1,37 +1,39 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useItems } from "../context/ItemsContext";
-import { useNavigation } from "@react-navigation/native";
-import { ShowItem } from "./ShowItemScreen";
-import { Button, Card, Dialog, IconButton, Portal, Searchbar } from "react-native-paper";
+import { Card } from "react-native-paper";
 import { supabase } from "../supabaseClient";
 import { SearchComponent } from "../components/Search";
 
 export const ListItem = ({navigation} : any) => {
 
-    const { items, oneItem, dialogi, setDialogi, setItems, searchOne, deleteItem } = useItems();
+    const { items, setItems } = useItems();
     
 
     useEffect(() => {
         const fetchData = async () => {
-          const { data, error } = await supabase
-            .from('Item')
-            .select();
-    
-          if (error) {
-            console.error('Virhe haettaessa dataa:', error);
-          } else {
-            setItems(data);
-            console.log('Haettu data:', data);
+
+          try {
+              const { data, error } = await supabase
+              .from('Item')
+              .select();
+      
+            if (error) {
+              console.error('Virhe haettaessa dataa:', error);
+            } else {
+              setItems(data);
+              console.log('Haettu data:', data);
+            }
+          } catch (error) {
+              console.error('Virhe haettaessa dataa:', error);
           }
+
         };
     
         fetchData();
       }, []);
     
-    
-
     return (
         <SafeAreaView className="m-1">
           <Text className="text-xl font-bold mb-4">Lista esineistä</Text>

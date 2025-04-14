@@ -1,8 +1,6 @@
-import { Text, View, PermissionsAndroid, StyleSheet, Touchable, TouchableOpacity, Image } from "react-native"
+import { Text, View, StyleSheet, Image } from "react-native"
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context"
-import Geolocation from 'react-native-geolocation-service';
-import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera";
 import { CameraComponent } from "../components/Camera";
 import { useItems } from "../context/ItemsContext";
 import { HelperText, IconButton, TextInput} from 'react-native-paper';
@@ -15,10 +13,16 @@ interface Virheet {
   nimi?: string;
   kuvaus?: string;
 }
+interface Tiedot {
+  nimi : string,
+  kuvaus : string,
+  sijainti : { latitude : number, longitude : number },
+  kuva : string
+}
 
 export const CreateItem = () => {
 
-  const [tiedot, setTiedot] = useState({
+  const [tiedot, setTiedot] = useState<Tiedot>({
     nimi: "",
     kuvaus: "",
     sijainti: { latitude: 0, longitude: 0 },
@@ -46,6 +50,7 @@ export const CreateItem = () => {
         type: "success"
       })
       addItem(tiedot); 
+      console.log("Lisätään esine", tiedot);
       setTiedot(prev => ({
         ...prev,
         nimi: '',
@@ -87,9 +92,7 @@ const tarkastaLomake = () => {
 
   setVirheIlmoitukset(virheet);
   return virheet;
-
 }
-
 
     return (
         
@@ -104,12 +107,24 @@ const tarkastaLomake = () => {
           </View>
 
           <Text className="mt-4 mb-1">Name</Text>
-          <TextInput className={`border p-2 ${virheilmoitukset.nimi ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä teksti" value={tiedot.nimi} onChangeText={uusinimi => setTiedot(prev => ({...prev, nimi : uusinimi}))}/>
-          {virheilmoitukset.nimi && <HelperText type="error">{virheilmoitukset.nimi}</HelperText>}
+          <TextInput 
+              className={`border p-2 
+                ${virheilmoitukset.nimi ? "border-red-500" : "border-gray-300"}`}  
+              placeholder="Syötä teksti" 
+              value={tiedot.nimi} 
+              onChangeText={uusinimi => setTiedot(prev => ({...prev, nimi : uusinimi}))}/>
+              {virheilmoitukset.nimi && 
+          <HelperText type="error">{virheilmoitukset.nimi}</HelperText>}
 
           <Text className="mt-4 mb-1">Description</Text>
-          <TextInput className={`border p-2 ${virheilmoitukset.kuvaus ? "border-red-500" : "border-gray-300"}`}  placeholder="Syötä kuvaus" value={tiedot.kuvaus} onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}/>
-          {virheilmoitukset.kuvaus && <HelperText type="error">{virheilmoitukset.kuvaus}</HelperText>}
+          <TextInput 
+              className={`border p-2 
+                ${virheilmoitukset.kuvaus ? "border-red-500" : "border-gray-300"}`} 
+              placeholder="Syötä kuvaus" 
+              value={tiedot.kuvaus} 
+              onChangeText={uusikuvaus => setTiedot(prev => ({...prev, kuvaus : uusikuvaus}))}/>
+              {virheilmoitukset.kuvaus && 
+          <HelperText type="error">{virheilmoitukset.kuvaus}</HelperText>}
 
 
           {tiedot.kuva 
@@ -145,29 +160,5 @@ const tarkastaLomake = () => {
     )
 
 }
-
-const styles = StyleSheet.create({
-  camera: {
-    position: 'absolute', 
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-  },
-  button : {
-    flex : 1,
-    backgroundColor: 'white',
-    padding: 10,
-    width: 60,
-    height: 60,
-    borderRadius: 30, 
-    position: 'absolute',
-    bottom: 20,
-    left: '50%',
-    marginLeft: -30 
-  }
-});
 
 

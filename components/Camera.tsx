@@ -1,8 +1,7 @@
 import React, { useRef } from 'react';
-import { Text, TouchableOpacity, StyleSheet, Button, View } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { Camera, useCameraDevice } from 'react-native-vision-camera';
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
-import { useItems } from '../context/ItemsContext';
 
 interface CameraComponentProps {
   kamera: boolean;
@@ -14,23 +13,17 @@ interface CameraComponentProps {
 export const CameraComponent: React.FC<CameraComponentProps> = ({ kamera, setKamera, kuvanTiedot, setKuvanTiedot }) => {
 
     const camera = useRef<Camera>(null);
-    const {addItem} = useItems();
+    const device = useCameraDevice('back');
+    if (!device) {
+      return <Text>Ladataan...</Text>;
+    }
 
     const otaKuva = async () => {
-
         const kuva = await camera.current?.takePhoto();
         setKuvanTiedot(kuva?.path || "");
         CameraRoll.saveAsset(`file://${kuva?.path}`, { type: 'photo' })
         setKamera(false);
-        
     };
-
-  const device = useCameraDevice('back');
-  
-
-  if (!device) {
-    return <Text>Kameraa ei löytynyt</Text>;
-  }
 
   return (
     <>
