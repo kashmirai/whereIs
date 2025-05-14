@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { supabase } from '../supabaseClient';
 import { showMessage } from 'react-native-flash-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Button } from 'react-native-paper';
 
 export const LoginScreen = ({navigation} : any) => {
     
+  const insets = useSafeAreaInsets()
   const [email, setEmail] = useState('test@test.fi');
   const [password, setPassword] = useState('test123');
 
@@ -14,6 +17,7 @@ export const LoginScreen = ({navigation} : any) => {
       email,
       password,
     });
+
 
     if (error) {
       console.error("Kirjautumisvirhe:", error.message);
@@ -34,7 +38,7 @@ export const LoginScreen = ({navigation} : any) => {
   };
 
   return (
-    <View className="flex-1 justify-center items-center bg-white px-6">
+    <View style={{ flex : 1, paddingTop : insets.top, paddingBottom : insets.bottom }} className="bg-white px-6">
       <Text className="text-3xl font-bold mb-6">Kirjaudu sisään</Text>
 
       <TextInput
@@ -54,19 +58,20 @@ export const LoginScreen = ({navigation} : any) => {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity
+      <Button
         onPress={handleLogin}
-        className="bg-blue-600 w-full py-3 rounded-xl"
+        mode='contained'
+        className='mb-3'
       >
-        <Text className="text-white text-center text-lg font-semibold">Kirjaudu</Text>
-      </TouchableOpacity>
+        <Text className="text-center text-lg font-semibold">Kirjaudu</Text>
+      </Button>
 
-      <TouchableOpacity
+      <Button
         onPress={() => navigation.navigate('Home')}
-        className="bg-blue-600 w-full py-3 rounded-xl"
+        mode='outlined'
       >
-        <Text className="text-white text-center text-lg font-semibold">Home</Text>
-      </TouchableOpacity>
+        <Text className= "text-center text-lg font-semibold">Etusivulle</Text>
+      </Button>
     </View>
   );
 };

@@ -1,6 +1,6 @@
-import { StyleSheet, Text } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context"
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { ParamListBase, useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { Button } from 'react-native-paper';
@@ -9,6 +9,7 @@ import { showMessage } from "react-native-flash-message"
 
 export const HomeScreen= () => {
 
+    const insets = useSafeAreaInsets()
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
     const [user, setUser] = useState<any>(null);
 
@@ -22,7 +23,7 @@ export const HomeScreen= () => {
       }, []);
 
     return (
-        <SafeAreaView>
+        <View style={{ flex : 1, paddingTop : insets.top, paddingBottom : insets.bottom }} className="bg-white px-6">
 
         <Text className="text-3xl text-center font-bold">Where is</Text>
 
@@ -72,7 +73,7 @@ export const HomeScreen= () => {
         Kirjaudu ulos
         </Button>
 
-        </SafeAreaView>
+        </View>
 
     )
 

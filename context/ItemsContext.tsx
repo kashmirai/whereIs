@@ -40,6 +40,7 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [muokkausTila, setMuokkausTila] = useState<boolean>(false);
 
     const addItem = async (item: Item): Promise<{success : boolean, error? : string}> => {
+
         const { data, error } = await supabase.from('Item').insert([item]);
       
         if (error) {
@@ -47,7 +48,6 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           return{success : false, error : error.message};
         }
       
-        console.log("Esine lisätty onnistuneesti:", data);
         setItems((prevItems) => [...prevItems, item]);
         return {success : true};
       };
@@ -55,7 +55,6 @@ export const ItemsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const searchItems = async (searchQuery: string) => {
         const {data, error} = await supabase.from('Item').select().ilike('nimi', `%${searchQuery}%`);
-        console.log('Haettu data:', data);
         if (error) {
             console.error('Virhe haettaessa dataa:', error);
         } else {

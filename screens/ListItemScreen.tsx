@@ -1,6 +1,6 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context"
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useItems } from "../context/ItemsContext";
 import { Card } from "react-native-paper";
 import { supabase } from "../supabaseClient";
@@ -9,30 +9,26 @@ import { showMessage } from "react-native-flash-message";
 
 export const ListItem = ({navigation} : any) => {
 
+    const insets = useSafeAreaInsets()
     const { items, setItems } = useItems();
     const [user, setUser] = useState<any>(null);
     const [virhe, setVirhe] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
-
           try {
               const { data, error } = await supabase
               .from('Item')
               .select();
-      
             if (error) {
               console.error('Virhe haettaessa dataa:', error);
             } else {
               setItems(data);
-              console.log('Haettu data:', data);
             }
           } catch (error) {
               console.error('Virhe haettaessa dataa:', error);
           }
-
         };
-    
         fetchData();
       }, []);
 
@@ -61,7 +57,8 @@ export const ListItem = ({navigation} : any) => {
     }
     
     return (
-        <SafeAreaView className="m-1">
+        <View style={{ flex : 1, paddingTop : insets.top, paddingBottom : insets.bottom }} className="bg-white px-6">
+        
           <Text className="text-xl font-bold mb-4">Lista esineistä</Text>
 
         <SearchComponent/>
@@ -82,7 +79,7 @@ export const ListItem = ({navigation} : any) => {
 
 
 
-        </SafeAreaView>
+        </View>
 
         
 

@@ -30,8 +30,8 @@ const App = () => {
           <Stack.Screen name='List Item' component={ListItem}/>
           <Stack.Screen name='Log In' component={LoginScreen}/>
       </Stack.Navigator>
+      <FlashMessage position="center"/>
     </NavigationContainer>
-    <FlashMessage position="center" hideStatusBar={true}/>
     </SafeAreaProvider>
 
     </ItemsProvider>

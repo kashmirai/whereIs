@@ -1,6 +1,6 @@
-import { Text, View, StyleSheet, Image } from "react-native"
+import { Text, View, Image } from "react-native"
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { CameraComponent } from "../components/Camera";
 import { useItems } from "../context/ItemsContext";
 import { HelperText, IconButton, TextInput} from 'react-native-paper';
@@ -23,6 +23,7 @@ interface Tiedot {
 
 export const CreateItem = () => {
 
+  const insets = useSafeAreaInsets()
   const [user, setUser] = useState<any>(null);
   const [tiedot, setTiedot] = useState<Tiedot>({
     nimi: "",
@@ -126,8 +127,8 @@ export const CreateItem = () => {
 
     return (
         
-        <SafeAreaView style={{flex : 1}} className="mx-1">
-
+          <View style={{ flex : 1, paddingTop : insets.top, paddingBottom : insets.bottom }} className="bg-white px-6">
+        
           <Text className="my-2 text-xl font-bold">Add a new item</Text>
 
           <View>
@@ -171,11 +172,11 @@ export const CreateItem = () => {
           }
 
           <View className="mt-5">
-          <Button mode="contained" onPress={() => kaynnistaKamera()}>Add Image</Button>
+          <Button mode="outlined" onPress={() => kaynnistaKamera()}>Add Image</Button>
           </View>
 
           <View className="mt-3">
-          <Button mode="contained" onPress={() => tallennaTiedot()}>Save Item</Button>
+          <Button mode="contained" onPress={() => tallennaTiedot()} >Save Item</Button>
           </View>
           
           {kamera 
@@ -185,7 +186,7 @@ export const CreateItem = () => {
               kuvanTiedot = {kuvanTiedot}
               setKuvanTiedot = {setKuvanTiedot}/> 
           : <></> }
-        </SafeAreaView>
+        </View>
 
     )
 
