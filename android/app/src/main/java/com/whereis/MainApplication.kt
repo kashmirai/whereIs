@@ -1,4 +1,4 @@
-package com.where
+package com.whereis
 
 import android.app.Application
 import com.facebook.react.PackageList

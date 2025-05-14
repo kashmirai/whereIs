@@ -1,4 +1,4 @@
-package com.where
+package com.whereis
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
